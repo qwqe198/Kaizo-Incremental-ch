@@ -73,7 +73,7 @@ const getInitialCurrencies = () => {
 
                 x = x.pow(Upgrade.getEffect('point\\6')).root(game.kaizo_penalty.points)
 
-                return x
+                return x.mul(10)
             },
         }),
         prestige: new PassiveCurrency({
