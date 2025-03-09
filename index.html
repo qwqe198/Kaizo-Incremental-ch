@@ -1,0 +1,125 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaizo Incremental</title>
+
+    <link rel="stylesheet" href="stylesheets/style.css">
+
+    <script src="scripts/libraries/jquery-3.7.1.min.js"></script>
+    <script src="scripts/libraries/break_eternity.js"></script>
+    <script src="scripts/libraries/vue.min.js"></script>
+
+    <script src="scripts/pre_init.js"></script>
+
+    <script src="scripts/object.js"></script>
+    <script src="scripts/decimal.js"></script>
+    <script src="scripts/format.js"></script>
+    <script src="scripts/tooltip.js"></script>
+
+    <script src="scripts/classes/currency.js"></script>
+    <script src="scripts/classes/upgrade.js"></script>
+    <script src="scripts/classes/reset.js"></script>
+    <!--<script src="scripts/classes/building.js"></script>-->
+
+    <script src="scripts/kaizo.js"></script>
+    <script src="scripts/point-dimensions.js"></script>
+    <script src="scripts/tabs.js"></script>
+
+    <script src="scripts/temp.js"></script>
+    <script src="scripts/calc.js"></script>
+    <script src="scripts/main.js"></script>
+    <script src="scripts/saving.js"></script>
+
+    <script src="scripts/init.js"></script>
+</head>
+<body onload="onLoad(true)">
+    <input id="copy" style="position: absolute; top: 0; left: 0; user-select: all; visibility: hidden;">
+    <div id="main-background"></div>
+    <div id="app">
+        <div id="tabs">
+            <button v-for="i in TABS.length" v-if="TABS[i-1].unl()" class="o-tab-button tooltip" tooltip-align="left" tooltip-text-align="left" :id="`tab-btn-${i-1}`" :class="{ active: game.tab == i - 1 }" @click="game.tab = i - 1">{{ TABS[i-1].symbol }}</button>
+        </div>
+        <div id="main">
+            <div v-if="game.tab == 0">
+                <div id="kaizo-info">
+                    <div>
+                        <div>你的 <b>Kaizo 等级</b>是 <h3>{{ player.kaizo.amount }}κ</h3>。</div>
+                        <div v-if="player.kaizo.amount.gt(1)">由于 <b>Kaizo 惩罚</b>，你的点数被开 <h4>{{ format(game.kaizo_penalty.points,3) }}</h4> 次方根。</div>
+                    </div>
+                    <button @click="KAIZO.action()" :class="{locked: !KAIZO.perkOwned(1,1)}" v-html="KAIZO.actionButton"></button>
+                </div>
+                <br class="line">
+                <div v-for="i in KAIZO.perk_map.length-1" v-if="player.kaizo.amount.gte(KAIZO.perk_map[i].req)" style="position: relative;">
+                    <br class="sub-line" v-if="i > 1">
+                    <div class="o-kaizo-perks">
+                        <div v-for="j in KAIZO.perk_map[i].map.length-1" class="o-kaizo-perk-sub-group">
+                            <button v-for="k in KAIZO.perk_map[i].map[j][0]" class="o-kaizo-perk tooltip" :class="KAIZO.perk_object_class(i,k,j)" @click="KAIZO.perkAction(i,k,j)" tooltip-align="left" tooltip-text-align="left" :id="`kaizo-perk-${i}-${k}`">{{ KAIZO.symbols[i] }}<sub>{{ k }}</sub></button>
+                            <div class="o-kaizo-perk-lock" v-if="game.active_perk_groups[i] && player.kaizo.amount.lt(KAIZO.perk_map[i].map[j][1])"><div>{{KAIZO.perk_map[i].map[j][1]}}κ</div></div>
+                        </div>
+                    </div>
+                    <div v-if="i > 1 && !game.active_perk_groups[i]" class="o-kaizo-perk-group-lock">
+                        <div>要解锁，必须拥有 <b>{{ KAIZO.symbols[i-1] }}<sub>1</sub></b> 和 <b>{{ KAIZO.perk_map[i].bought - 1 }}</b> 个前置天赋<span v-if="i > 2">，并满足上述条件</span>。</div>
+                    </div>
+                </div>
+                <div style="height: 30px;"></div>
+                <div style="position: absolute; bottom: 0; left: 0; width: 100%; z-index: 1;">
+                    你有 <h4>{{ player.kaizo.unspent }}</h4> 个 Kaizo 天赋。<span v-if="KAIZO.active"><b style="color: coral;">在 Kaizo 模式中无法购买或出售天赋。</b></span>
+                </div>
+            </div>
+            <div v-if="game.tab == 1">
+                <div class="table-center">
+                    <button onclick="save()">保存</button>
+                    <button onclick="export_copy()">通过剪贴板导出</button>
+                    <button onclick="exporty()">通过文件导出</button>
+                    <button onclick="importy()">通过输入框导入</button>
+                    <button onclick="importy_file()">通过文件导入</button>
+                    <button style="background: #622;" @click="wipe()">清除存档</button>
+                </div>
+                <br class="sub-line">
+                <div><b>Kaizo 增量</b> 原型 v0.1 - 作者 <b>MrRedShark77</b></div>
+                <div>灵感来自 <a href="https://jacorb90.me/Rapture-30/" target="_blank" style="background-color: #fff8;">Rapture 30</a>。</div>
+                <div>汉化作者 <b>22222</b></div>
+                <div>汉化版福利 <b>Kaizo惩罚效果略微降低</b></div>
+            </div>
+            <div v-if="game.tab == 2">
+                <div>你有 <h3>{{ game.currencies.points.format() }}</h3> {{ game.currencies.points.formatGain() }} 点数。</div>
+                <upgrades :data="game.upgrade_groups.points"></upgrades>
+            </div>
+            <div v-if="game.tab == 3">
+                <div>你有 <h3>{{ game.currencies.prestige.format() }}</h3> {{ game.currencies.prestige.formatGain() }} 声望点数。</div>
+                <div>这将点数增加 <h4>{{ formatMult(game.prestige_boost) }}</h4> 倍。</div>
+                <reset :data="game.resets.prestige"></reset>
+                <upgrades :data="game.upgrade_groups.prestige"></upgrades>
+            </div>
+            <div v-if="game.tab == 4">
+                <div>你有 <h3>{{ game.currencies.powers.format() }}</h3> {{ game.currencies.powers.formatGain() }} 能量<sup>{{ format(game.power_exponent) }}</sup>。</div>
+                <div>这将点数增加 <h4>{{ formatMult(game.power_boost) }}</h4> 倍。</div>
+                <br class="line">
+                <button @click="buyMaxPointDimensions()">全部购买</button>
+                <upgrades :data="game.upgrade_groups.powers"></upgrades>
+                <div v-for="x in 10" class="o-point-dimension" v-if="x == 1 || game.point_dimensions[x-2].boughts.gte(1)">
+                    <div>
+                        <div class="o-point-dimension-label"><h4>点数维度 #{{ x }}</h4><br>{{ formatMult(game.point_dimensions[x-1].multiplier) }}</div>
+                    </div>
+                    <div>
+                        <div class="o-point-dimension-label">{{ game.point_dimensions[x-1].amount.format(0) }} <span v-if="x < 10">{{ game.point_dimensions[x-1].amount.formatGain(game.point_dimensions[x-1].gain) }}</span><br>({{ game.point_dimensions[x-1].boughts.format(0) }})</div>
+                    </div>
+                    <button @click="game.point_dimensions[x-1].purchase(1)" :class="{locked: game.point_dimensions[x-1].resource1.lt(game.point_dimensions[x-1].cost(1))}">成本: {{ format(game.point_dimensions[x-1].cost(1),0) }} 点数</button>
+                    <button @click="game.point_dimensions[x-1].purchase(2)" :class="{locked: game.point_dimensions[x-1].resource2.lt(game.point_dimensions[x-1].cost(2))}">成本: {{ format(game.point_dimensions[x-1].cost(2),0) }} 能量</button>
+                </div>
+            </div>
+            <div style="display: none;">{{ game.time }}</div>
+        </div>
+        <div id="kaizo-progress" @click="KAIZO.action(true)" :class="{completed: game.currencies.points.total.gte(KAIZO.goal)}">
+            <div id="kaizo-progress-bar" :style="{ width: `${KAIZO.percent * 100}%` }"></div>
+
+            <div id="kaizo-progress-points">{{ game.currencies.points.total.format(0) }}</div>
+            <div id="kaizo-progress-percent">{{ KAIZO.percent < 1 ? formatPercent(KAIZO.percent) : "点击完成 Kaizo" }}</div>
+            <div id="kaizo-progress-goal">{{ KAIZO.goal.format(0) }}</div>
+        </div>
+    </div>
+    <div id="tooltip-div"></div>
+    <div id="frontground"></div>
+</body>
+</html>

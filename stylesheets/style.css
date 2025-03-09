@@ -1,0 +1,434 @@
+@font-face {
+    font-family: MainFont;
+    src: url(JetBrainsMono-VariableFont_wght.ttf);
+}
+
+* {
+	font-family: MainFont;
+    table-align: center;
+	text-align: center;
+    user-select: none;
+}
+
+body {
+    background: #111;
+    overflow-x: hidden;
+    margin: 10px;
+    font-size: 14px;
+    color: white;
+}
+
+#main {
+    position: relative;
+    background: #222;
+    padding: 5px;
+    width: calc(100% - 10px);
+    height: calc(100% - 125px);
+    overflow-y: auto;
+}
+
+#tabs {
+    display: flex;
+    justify-content: start;
+    flex-flow: row nowrap;
+
+    width: 100%;
+    height: 75px;
+    overflow-x: scroll;
+}
+
+#tabs, .o-kaizo-perks {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+#tabs::-webkit-scrollbar,
+.o-kaizo-perks::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+.table {
+	width: 100%;
+}
+
+.table td {
+	vertical-align: top;
+}
+
+h1 {
+    display: inline;
+	font-weight: normal;
+    font-size: 28px;
+}
+
+h2 {
+	display: inline;
+	font-weight: normal;
+    font-size: 24px;
+}
+
+h3 {
+	display: inline;
+	font-weight: bold;
+    font-size: 20px;
+}
+
+h4 {
+	display: inline;
+	font-weight: bold;
+    font-size: 18px;
+}
+
+.free-select {
+	user-select: text;
+}
+
+.table-center {
+    display: flex;
+    justify-content: center;
+    flex-flow: row wrap;
+}
+
+.table-left {
+    display: flex;
+    justify-content: start;
+    flex-flow: row wrap;
+}
+
+.item-left {
+	width: 100%;
+	text-align: left;
+}
+
+.line, .black-line {
+	content: '';
+	display: block;
+	width: 100%;
+	margin-top: 6px;
+	height: 6px;
+	border-top: solid 2px white;
+}
+.black-line {
+	border-top-color: black;
+}
+
+.sub-line {
+	content: '';
+	display: block;
+	width: calc(100% - 2px);
+	margin: 6px auto;
+	height: 0px;
+	border-top: solid 2px #fff2;
+}
+
+*::-webkit-scrollbar {
+    width: 10px;
+	height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+    background-color: #0000;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+}
+
+button {
+    cursor: pointer;
+    background: #333;
+    padding: 5px 10px;
+    color: white;
+    border: none;
+    font-size: 14px;
+    margin: 3px;
+}
+
+button * {
+    pointer-events: none;
+}
+
+button.locked {
+    cursor: not-allowed;
+    background: #282828;
+}
+
+button.bought {
+    cursor: default;
+    background: #343;
+}
+
+button.inactive {
+    cursor: default;
+    background: #422;
+}
+
+button:not(.o-tab-button,.locked,.inactive):hover {
+    background-image: linear-gradient(rgb(0 0 0/10%) 0 0);
+}
+
+button:not(.o-tab-button,.locked,.inactive):active {
+    background-image: linear-gradient(rgb(0 0 0/20%) 0 0);
+}
+
+.o-upgrade-button {
+    position: relative;
+    width: 300px;
+    min-height: 200px;
+    padding: 15px 5px;
+    font-size: 11px;
+    margin: 0px;
+}
+
+.upgrade-level {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+}
+
+.upgrade-cost {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+}
+
+.o-upgrade-group {
+    display: grid;
+    justify-content: center;
+    grid-template-columns: repeat(auto-fit, 300px);
+    grid-auto-rows: auto;
+    gap: 5px;
+    margin: 5px;
+}
+
+.o-upgrade-bottom {
+    display: flex;
+}
+.o-upgrade-bottom > button {
+    width: 100%;
+    margin: 0px;
+    font-size: 10px;
+    height: 25px;
+}
+
+.o-tab-button {
+    cursor: pointer;
+
+    width: 75px;
+    height: 75px;
+    margin: 0px;
+    padding: 0px;
+    font-size: 36px;
+    font-weight: bold;
+
+    background: #181818;
+
+    flex-shrink: 0;
+}
+.o-tab-button.active {
+    cursor: default;
+
+    background: #222;
+}
+
+#kaizo-progress {
+    position: relative;
+    margin-top: 10px;
+    width: 100%;
+    height: 30px;
+    background: #161616;
+    overflow: hidden;
+}
+#kaizo-progress * {
+    pointer-events: none;
+}
+
+#kaizo-progress-points {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    text-align: left;
+    transform: translateY(-50%);
+}
+#kaizo-progress-percent {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    transform: translateY(-50%);
+}
+#kaizo-progress-goal {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    text-align: right;
+    transform: translateY(-50%);
+}
+
+#kaizo-progress-bar {
+    content: "";
+
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 0px;
+    height: 100%;
+
+    background: repeating-linear-gradient(-45deg, #343 0px 20px, #454 20px 40px);
+}
+
+#kaizo-progress.completed {
+    cursor: pointer;
+}
+#kaizo-progress.completed > #kaizo-progress-bar {
+    animation: bar-filled 2s ease-in-out infinite;
+}
+
+@keyframes bar-filled {
+    from, to {
+        filter: brightness(1);
+    }
+    50% {
+        filter: brightness(2);
+    }
+}
+
+.o-kaizo-perks {
+    /*
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: start;
+    align-items: stretch;
+    */
+
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 64px;
+
+    width: 100%;
+    overflow-x: scroll;
+    gap: 5px;
+}
+.o-kaizo-perks > div {
+    position: relative;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    flex-shrink: 0;
+    gap: 5px;
+}
+.o-kaizo-perk {
+    width: 64px;
+    height: 64px;
+    padding: 0px;
+    margin: 0px;
+    flex-shrink: 0;
+    font-size: 28px;
+}
+
+#tooltip-div {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+
+    background-color: #000c;
+    min-width: 20px;
+    max-width: 400px;
+    min-height: 10px;
+	font-size: 12px;
+	padding: 5px;
+
+    color: white;
+    text-align: left;
+
+    pointer-events: none;
+}
+
+#kaizo-info {
+    display: grid;
+    grid-template-columns: 1fr 150px;
+    grid-auto-rows: auto;
+    gap: 5px;
+}
+#kaizo-info > button {
+    height: 150px;
+}
+
+#frontground {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 3;
+}
+
+.o-kaizo-perk-group {
+    position: relative;
+}
+
+.o-kaizo-perk-lock {
+    position: absolute;
+    top: 0%;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background: #0008;
+    pointer-events: none;
+}
+
+.o-kaizo-perk-group-lock {
+    position: absolute;
+    top: 8px;
+    left: 0px;
+    width: 100%;
+    height: calc(100% - 8px);
+    background: #0008;
+    pointer-events: none;
+}
+
+.o-kaizo-perk-lock > div {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+}
+
+.o-kaizo-perk-group-lock > div {
+    position: absolute;
+    top: 50%;
+    left: 0px;
+    width: 100%;
+    transform: translateY(-50%);
+}
+
+.o-reset-button {
+    width: 300px;
+    height: 150px;
+}
+
+.o-point-dimension {
+    display: grid;
+    grid-template-columns: 250px 1fr 150px 150px;
+    align-items: center;
+    height: 50px;
+    padding: 5px;
+}
+.o-point-dimension:nth-child(2n+1) {
+    background: #0002;
+}
+.o-point-dimension button {
+    margin: 0px;
+    padding: 0px;
+    font-size: 11px;
+    height: 100%;
+}
+
+.o-point-dimension-label {
+    text-align: left;
+}
